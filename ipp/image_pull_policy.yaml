@@ -1,3 +1,17 @@
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sRequiredRegistry
+metadata:
+  name: imagesmustcomefromgcr
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  match:
+    kinds:
+      - apiGroups: [""]
+        kinds: ["Pod"]
+  parameters:
+    registry: "docker.io/"
+---
 apiVersion: templates.gatekeeper.sh/v1beta1
 kind: ConstraintTemplate
 metadata:
@@ -25,18 +39,3 @@ spec:
           not startswith(image,required)
           msg := sprintf("Forbidden registry: %v", [image])
         }
-
----
-apiVersion: constraints.gatekeeper.sh/v1beta1
-kind: K8sRequiredRegistry
-metadata:
-  name: imagesmustcomefromgcr
-  annotations:
-    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
-spec:
-  match:
-    kinds:
-      - apiGroups: [""]
-        kinds: ["Pod"]
-  parameters:
-    registry: "docker.io/"
